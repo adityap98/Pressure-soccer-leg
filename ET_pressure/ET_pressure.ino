@@ -22,8 +22,8 @@ boolean countingTaps;
 int baseVoltage;
 
 const int sensor = A0;
-const int threshold = 75;
-//const int second_threshold = 400;
+const int threshold = 400;
+const int calibrationTime = 300; // 300 * 10 ms = 3 sec;
 const int timeToUnlock = 100; // 100 * 10 ms = 1 sec
 const int timeToLock = 150; // 150 * 10 ms = 1.5 sec
 const int tapsToUnlock = 3;
@@ -87,7 +87,7 @@ if (tapTimer > timeToUnlock){
 }
 
 void calibrate() {
-  for (int i = 0; i < 300; i+= 1) {
+  for (int i = 0; i < calibrationTime; i+= 1) {
     delay(10);
   }
   baseVoltage = analogRead(sensor);
