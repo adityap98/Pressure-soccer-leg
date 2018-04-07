@@ -24,8 +24,8 @@ int baseVoltage;
 const int sensor = A0;
 const int threshold = 75;
 //const int second_threshold = 400;
-const int timeToUnlock = 150; // 150 * 10 ms = 1.5 sec
-const int timeToLock = 200; // 200 * 10 ms = 2 sec
+const int timeToUnlock = 100; // 100 * 10 ms = 1 sec
+const int timeToLock = 150; // 150 * 10 ms = 1.5 sec
 const int tapsToUnlock = 3;
 
 // the setup routine runs once when you press reset:
