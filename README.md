@@ -31,7 +31,7 @@ git pull origin master
 Create a new branch called `yourname/your_feature`.
 
 ```bash
-git checkout -b ken/new_feature
+git checkout -b yourname/new_feature
 ```
 
 When you're doing working on stuff and ready to share your code.
@@ -39,6 +39,6 @@ When you're doing working on stuff and ready to share your code.
 ```bash
 git add -A
 git commit -m "Write some message"
-git push origin ken/new_feature  # If you get an error here try pulling again
+git push origin yourname/new_feature  # If you get an error here try pulling again
 git checkout master  # Go back to master branch
 ```
