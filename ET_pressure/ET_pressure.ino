@@ -11,7 +11,7 @@
 
 Servo myservo;
 int locked = 0;
-int unlocked = 45;
+int unlocked = 135;
 
 int numTaps = 0;
 int tapTimer = 0;
@@ -19,29 +19,32 @@ int tapTimer = 0;
 int howLongHeld;
 boolean isPeak;
 boolean countingTaps;
+int baseVoltage;
 
-int startTime = 150;
 const int sensor = A0;
-const int threshold = 300;
+const int threshold = 75;
+//const int second_threshold = 400;
 const int timeToUnlock = 150; // 150 * 10 ms = 1.5 sec
-const int timeToLock = 300; // 300 * 10 ms = 3 sec
+const int timeToLock = 200; // 200 * 10 ms = 2 sec
+const int tapsToUnlock = 3;
 
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
   myservo.attach(9);
+  myservo.write(locked);
+  calibrate();
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
   // read the input on analog pin 0:
   float voltage;
-  voltage = analogRead(sensor);
+  voltage = analogRead(sensor) - baseVoltage;
   
   if (voltage < threshold) {
-    //howLongHeld = 0;
-    myservo.write(locked);
+    howLongHeld = 0;
     isPeak = false;
     if (!countingTaps){
       tapTimer = 0;
@@ -64,30 +67,29 @@ void loop() {
     if (!countingTaps){
       countingTaps = true;
     }
-    if (countingTaps){
-      tapTimer += 1;
-    } 
-
-    if (tapTimer > timeToUnlock){
-     if (numTaps >= 3){
+    if (numTaps >= tapsToUnlock){
       myservo.write(unlocked);
-     } else {
-      numTaps = 0;
-      countingTaps = false;
-    }
-  }
+     }
  }
 
+if (countingTaps){
+      tapTimer += 1;
+ }
+if (tapTimer > timeToUnlock){
+     numTaps = 0;
+     tapTimer = 0;
+     countingTaps = false;
+  }
   
-  Serial.println(numTaps);
+  Serial.println(voltage);
   delay(10);        // delay in between reads for stability
    // Run stats script every 5 secs.
 }
 
-int timer(int timeRemaining) {
-  if (timeRemaining != 0) {
-    timeRemaining = timeRemaining - 10;
+void calibrate() {
+  for (int i = 0; i < 300; i+= 1) {
+    delay(10);
   }
-  return timeRemaining;
+  baseVoltage = analogRead(sensor);
 }
 
