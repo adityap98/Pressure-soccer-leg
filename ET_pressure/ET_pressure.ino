@@ -6,12 +6,11 @@
   http://www.arduino.cc/en/Tutorial/AnalogReadSerial
 */
 #include <Servo.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 
 Servo myservo;
-int locked = 0;
-int unlocked = 135;
+int locked = 180;
+int unlocked = 90;
 
 int numTaps = 0;
 int tapTimer = 0;
@@ -21,7 +20,8 @@ boolean isPeak;
 boolean countingTaps;
 int baseVoltage;
 
-const int sensor = A0;
+const int pressureSensor = A0;
+const int emgSensor = A1;
 const int threshold = 400;
 const int calibrationTime = 300; // 300 * 10 ms = 3 sec;
 const int timeToUnlock = 100; // 100 * 10 ms = 1 sec
@@ -40,48 +40,14 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   // read the input on analog pin 0:
-  float voltage;
-  voltage = analogRead(sensor) - baseVoltage;
-  
-  if (voltage < threshold) {
-    howLongHeld = 0;
-    isPeak = false;
-    if (!countingTaps){
-      tapTimer = 0;
-    }
-  }
-  
-  if (voltage > threshold) {
-    
-    // Holding
-    howLongHeld = howLongHeld + 1;
-    if (howLongHeld >= timeToLock) {
-      myservo.write(locked);
-    }
-    
-    // Number of taps
-    if (!isPeak) {
-      numTaps += 1;
-      isPeak = true;
-    }
-    if (!countingTaps){
-      countingTaps = true;
-    }
-    if (numTaps >= tapsToUnlock){
-      myservo.write(unlocked);
-     }
- }
+  float pressureVoltage;
+  float emgVoltage;
+  pressureVoltage = analogRead(pressureSensor) - baseVoltage;
+  emgVoltage = analogRead(emgSensor);
 
-if (countingTaps){
-      tapTimer += 1;
- }
-if (tapTimer > timeToUnlock){
-     numTaps = 0;
-     tapTimer = 0;
-     countingTaps = false;
-  }
+  pressureFunction(pressureVoltage);
   
-  Serial.println(voltage);
+  Serial.println(pressureVoltage);
   delay(10);        // delay in between reads for stability
    // Run stats script every 5 secs.
 }
@@ -90,6 +56,46 @@ void calibrate() {
   for (int i = 0; i < calibrationTime; i+= 1) {
     delay(10);
   }
-  baseVoltage = analogRead(sensor);
+  baseVoltage = analogRead(pressureSensor);
+}
+
+void pressureFunction(float voltage){
+    if (voltage < threshold) {
+      howLongHeld = 0;
+      isPeak = false;
+      if (!countingTaps){
+        tapTimer = 0;
+      }
+    }
+  
+    if (voltage > threshold) {
+    
+      // Holding
+      howLongHeld = howLongHeld + 1;
+      if (howLongHeld >= timeToLock) {
+        myservo.write(locked);
+      }
+    
+      // Number of taps
+      if (!isPeak) {
+        numTaps += 1;
+        isPeak = true;
+      }
+      if (!countingTaps){
+        countingTaps = true;
+      }
+      if (numTaps >= tapsToUnlock){
+        myservo.write(unlocked);
+       }
+    }
+
+    if (countingTaps){
+          tapTimer += 1;
+     }
+    if (tapTimer > timeToUnlock){
+         numTaps = 0;
+         tapTimer = 0;
+         countingTaps = false;
+      }
 }
 
