@@ -96,6 +96,6 @@ void pressureFunction(float voltage){
          numTaps = 0;
          tapTimer = 0;
          countingTaps = false;
-      }
+     }
 }
 
