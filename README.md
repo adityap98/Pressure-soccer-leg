@@ -1,4 +1,4 @@
-# myoware-hand-prosthetic
+# Pressure-soccer-leg
 Project for EnableTech Makeathon
 
 ## Developer Guide
